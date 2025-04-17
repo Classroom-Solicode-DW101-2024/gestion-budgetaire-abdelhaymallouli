@@ -44,41 +44,71 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>login</title>
-    <style>
-        body {
-            margin: 0;
-        }
-        main {
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        main form {
-            background-color: #f0f0f0;
-            display: flex;
-            flex-direction: column;
-        }
-    </style>
+    <title>Login - MonBudget</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/login.css">
 </head>
 <body>
-    <header></header>
-    <main>
-        <form method="post">
-            <span style="color: red;"><?php if(isset($errors['incorrect'])) echo $errors['incorrect']; ?></span>
-            <label for="email">email:</label>
-            <input type="email" id="email" name="email" value="<?php if(isset($email)) echo htmlspecialchars($email); ?>">
-            <span style="color: red;"><?php if(isset($errors['email'])) echo $errors['email']; ?></span>
-            <label for="password">password:</label>
-            <input type="password" id="password" name="password">
-            <span style="color: red;"><?php if(isset($errors['password'])) echo $errors['password']; ?></span>
-            <div>
-                <button name="submit">login</button>
-                <p>Vous n'avez pas de compte? <a href="register.php">register</a></p>
+    <div class="login-container">
+        <div class="image-side">
+            <div class="logo">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="white">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                </svg>
+                Welcome to MonBudget
             </div>
-        </form>
-    </main>
-    <footer></footer>
+            <div class="social-icons">
+                <div class="social-icon">
+                    <i class="fab fa-facebook-f"></i>
+                </div>
+                <div class="social-icon">
+                    <i class="fab fa-twitter"></i>
+                </div>
+                <div class="social-icon">
+                    <i class="fab fa-linkedin-in"></i>
+                </div>
+                <div class="social-icon">
+                    <i class="fab fa-github"></i>
+                </div>
+            </div>
+            <div class="help-links">
+                <a href="#">Have an issue with 2-factor authentication?</a>
+                <a href="#">Privacy Policy</a>
+            </div>
+        </div>
+        <div class="form-side">
+            <div class="form-header">Sign In</div>
+            
+
+            
+            <form method="post">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email" value="<?php if(isset($email)) echo htmlspecialchars($email); ?>">
+                    <?php if(isset($errors['email'])): ?>
+                        <div class="error-message"><?php echo $errors['email']; ?></div>
+                    <?php endif; ?>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter your password">
+                    <?php if(isset($errors['password'])): ?>
+                        <div class="error-message"><?php echo $errors['password']; ?></div>
+                    <?php endif; ?>
+                </div>
+
+                <?php if(isset($errors['incorrect'])): ?>
+                <div class="error-message"><?php echo $errors['incorrect']; ?></div>
+            <?php endif; ?>
+                
+                <button type="submit" class="submit-button">Sign In</button>
+                
+                <div class="form-footer">
+                    <div>Don't have an account? <a href="register.php">Sign Up</a></div>
+                </div>
+            </form>
+        </div>
+    </div>
 </body>
 </html>
