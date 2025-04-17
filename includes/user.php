@@ -2,10 +2,13 @@
 
 require_once __DIR__ . '/../config/config.php';
 
+function cleanInput($data) {
+    return htmlspecialchars(strip_tags(trim($data)));
+}
 
 function addUser($user, $connection) {
-    $name = $user['name'];
-    $email = $user['email'];
+    $name = cleanInput($user['nom']);
+    $email = cleanInput($user['email']);
     $rawPassword = $user['password'];
     $password = password_hash($rawPassword, PASSWORD_DEFAULT);
 
@@ -23,7 +26,7 @@ function addUser($user, $connection) {
     return "User added successfully";
 }
 
-// function to check if the user is already 
+
 function checkUser($email, $pdo) {
     $sql = "SELECT * FROM users WHERE email = :email";
     $stmt = $pdo->prepare($sql);
@@ -32,5 +35,21 @@ function checkUser($email, $pdo) {
     
     return $stmt->rowCount() > 0;
 }
+
+function login($email, $password, $pdo) {
+    $sql = "SELECT * FROM users WHERE email = :email";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':email', $email);
+    $stmt->execute();
+
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$user || !password_verify($password, $user['password'])) {
+        return false; 
+    }
+
+    return $user; 
+}
+
 
 ?>
