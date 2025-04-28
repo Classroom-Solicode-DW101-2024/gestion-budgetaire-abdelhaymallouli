@@ -11,31 +11,23 @@ if (isset($_SESSION['user_id'])) {
 $errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = $_POST['email'];
-    $password = $_POST['password'];
+    $email = trim($_POST['email']);
+    $password = trim($_POST['password']);
 
-    // Validate email
-    if (empty($email)) {
-        $errors['email'] = "L'email est requis.";
-    }
-
-    // Validate password
-    if (empty($password)) {
-        $errors['password'] = "Le mot de passe est requis.";
-    }
-
-    if (empty($errors['email']) && empty($errors['password'])) {
+    if (empty($email) || empty($password)) {
+        $errors[] = "Veuillez remplir tous les champs.";
+    } else {
         $user = login($email, $password, $connection);
-
-        if ($user)
+        if ($user) {
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['user_name'] = $user['nom'];
-            header('location: dashboard.php');
-            exit;
+            header("Location: dashboard.php");
+            exit();
         } else {
-            $errors = "Email ou mot de passe incorrect.";
+            $errors["incorrect"] = "Email ou mot de passe incorrect.";
         }
     }
+}
 
 ?>
 
@@ -78,15 +70,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
         <div class="form-side">
             <div class="form-header">Sign In</div>
-            
-
-            
             <form method="post">
                 <div class="form-group">
                     <label for="email">Email</label>
-                    <input type="email" id="email" name="email" placeholder="Enter your email" value="<?php if(isset($email)) echo htmlspecialchars($email); ?>">
+                    <input type="email" id="email" name="email" placeholder="Enter your email" value="<?php if(isset($email)) echo htmlspecialchars($email, ENT_QUOTES, 'UTF-8'); ?>">
                     <?php if(isset($errors['email'])): ?>
-                        <div class="error-message"><?php echo $errors['email']; ?></div>
+                        <div class="error-message"><?php echo htmlspecialchars($errors['email'], ENT_QUOTES, 'UTF-8'); ?></div>
                     <?php endif; ?>
                 </div>
                 
@@ -94,13 +83,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <label for="password">Password</label>
                     <input type="password" id="password" name="password" placeholder="Enter your password">
                     <?php if(isset($errors['password'])): ?>
-                        <div class="error-message"><?php echo $errors['password']; ?></div>
+                        <div class="error-message"><?php echo htmlspecialchars($errors['password'], ENT_QUOTES, 'UTF-8'); ?></div>
                     <?php endif; ?>
                 </div>
 
                 <?php if(isset($errors['incorrect'])): ?>
-                <div class="error-message"><?php echo $errors['incorrect']; ?></div>
-            <?php endif; ?>
+                    <div class="error-message"><?php echo htmlspecialchars($errors['incorrect'], ENT_QUOTES, 'UTF-8'); ?></div>
+                <?php endif; ?>
                 
                 <button type="submit" class="submit-button">Sign In</button>
                 

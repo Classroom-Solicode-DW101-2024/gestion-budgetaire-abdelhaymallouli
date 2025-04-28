@@ -1,8 +1,7 @@
 <?php
 session_start();
-require_once __DIR__ . '/../includes/user.php';
-require __DIR__ . '/../includes/transactions.php';
-
+require_once '../config/config.php';
+require_once '../includes/transactions.php';
 
 if (!isset($_SESSION['user_id'])) {
     header('location: index.php');
@@ -11,47 +10,49 @@ if (!isset($_SESSION['user_id'])) {
 
 $errors = [];
 
-
 $sql = "SELECT * FROM categories ORDER BY nom";
 $stmt = $connection->prepare($sql);
 $stmt->execute();
 $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $type = $_POST['type'];
-    $montant = $_POST['montant'] ?? '';
+    $type = $_POST['type'] ?? '';
+    $amount = $_POST['montant'] ?? '';
     $category_id = $_POST['category_id'] ?? '';
     $description = $_POST['description'] ?? '';
-    $date_transaction = $_POST['date_transaction'] ?? date('Y-m-d');
+    $transaction_date = $_POST['date_transaction'] ?? date('Y-m-d');
     $user_id = $_SESSION['user_id'];
 
-    if (empty($montant) || !is_numeric($montant)) {
-        $errors[] = "Montant Invalide";
+    if (empty($amount) || !is_numeric($amount)) {
+        $errors[] = "Invalid amount.";
     }
 
     if (empty($category_id)) {
         $errors[] = "Please select a category.";
     }
 
-    if (empty($date_transaction)) {
-        $errors[] = "Please choose a date.";
+    if (empty($transaction_date)) {
+        $errors[] = "Please select a date.";
     }
 
     if (empty($errors)) {
-        if (addTransaction($connection, $user_id, $category_id, $montant, $description, $date_transaction)) {
-            echo "<script>
-                window.parent.postMessage('closeModal', '*');
-            </script>";
+        $transaction = [
+            'user_id' => $user_id,
+            'category_id' => $category_id,
+            'montant' => $amount,
+            'description' => $description,
+            'date_transaction' => $transaction_date
+        ];
+        if (addTransaction($transaction, $connection)) {
+            echo "<script>parent.postMessage('closeModal', '*');</script>";
             exit;
         } else {
-            $errors[] = "Échec de l'ajout de la transaction.";
+            $errors[] = "Failed to add transaction.";
         }
     }
 }
-
-
-
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
